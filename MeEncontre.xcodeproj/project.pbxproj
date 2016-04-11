@@ -22,6 +22,7 @@
 		3E4508111CBAB4110080A966 /* GlanceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E4508101CBAB4110080A966 /* GlanceController.swift */; };
 		3E4508131CBAB4110080A966 /* ComplicationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E4508121CBAB4110080A966 /* ComplicationController.swift */; };
 		3E4508151CBAB4110080A966 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3E4508141CBAB4110080A966 /* Assets.xcassets */; };
+		3E4508251CBAB5F20080A966 /* MeEncontreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E4508241CBAB5F20080A966 /* MeEncontreViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -87,6 +88,7 @@
 		3E4508121CBAB4110080A966 /* ComplicationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplicationController.swift; sourceTree = "<group>"; };
 		3E4508141CBAB4110080A966 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3E4508161CBAB4110080A966 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		3E4508241CBAB5F20080A966 /* MeEncontreViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeEncontreViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -136,6 +138,7 @@
 				3E4507EC1CBAB4110080A966 /* Assets.xcassets */,
 				3E4507EE1CBAB4110080A966 /* LaunchScreen.storyboard */,
 				3E4507F11CBAB4110080A966 /* Info.plist */,
+				3E4508241CBAB5F20080A966 /* MeEncontreViewController.swift */,
 			);
 			path = MeEncontre;
 			sourceTree = "<group>";
@@ -310,6 +313,7 @@
 			files = (
 				3E4507E81CBAB4110080A966 /* ViewController.swift in Sources */,
 				3E4507E61CBAB4110080A966 /* AppDelegate.swift in Sources */,
+				3E4508251CBAB5F20080A966 /* MeEncontreViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -457,10 +461,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_COMPLICATION_NAME = Complication;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
 				INFOPLIST_FILE = "MeEncontre WatchKit Extension/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.luicil.fernandes.MeEncontre.watchkitapp.watchkitextension;
 				PRODUCT_NAME = "${TARGET_NAME}";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 4;
@@ -472,10 +479,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_COMPLICATION_NAME = Complication;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
 				INFOPLIST_FILE = "MeEncontre WatchKit Extension/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.luicil.fernandes.MeEncontre.watchkitapp.watchkitextension;
 				PRODUCT_NAME = "${TARGET_NAME}";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 4;
