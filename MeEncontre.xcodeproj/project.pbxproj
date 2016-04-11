@@ -23,6 +23,7 @@
 		3E4508131CBAB4110080A966 /* ComplicationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E4508121CBAB4110080A966 /* ComplicationController.swift */; };
 		3E4508151CBAB4110080A966 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3E4508141CBAB4110080A966 /* Assets.xcassets */; };
 		3E4508251CBAB5F20080A966 /* MeEncontreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E4508241CBAB5F20080A966 /* MeEncontreViewController.swift */; };
+		3EEA638C1CBC6C5900CD81BB /* ExternalAccessory.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3EEA638B1CBC6C5900CD81BB /* ExternalAccessory.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -89,6 +90,8 @@
 		3E4508141CBAB4110080A966 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3E4508161CBAB4110080A966 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3E4508241CBAB5F20080A966 /* MeEncontreViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeEncontreViewController.swift; sourceTree = "<group>"; };
+		3EEA638B1CBC6C5900CD81BB /* ExternalAccessory.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ExternalAccessory.framework; path = System/Library/Frameworks/ExternalAccessory.framework; sourceTree = SDKROOT; };
+		3EEA638D1CBC6C5900CD81BB /* MeEncontre.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = MeEncontre.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,6 +99,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3EEA638C1CBC6C5900CD81BB /* ExternalAccessory.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +116,7 @@
 		3E4507D91CBAB4110080A966 = {
 			isa = PBXGroup;
 			children = (
+				3EEA638B1CBC6C5900CD81BB /* ExternalAccessory.framework */,
 				3E4507E41CBAB4110080A966 /* MeEncontre */,
 				3E4507F81CBAB4110080A966 /* MeEncontre WatchKit App */,
 				3E4508071CBAB4110080A966 /* MeEncontre WatchKit Extension */,
@@ -132,6 +137,7 @@
 		3E4507E41CBAB4110080A966 /* MeEncontre */ = {
 			isa = PBXGroup;
 			children = (
+				3EEA638D1CBC6C5900CD81BB /* MeEncontre.entitlements */,
 				3E4507E51CBAB4110080A966 /* AppDelegate.swift */,
 				3E4507E71CBAB4110080A966 /* ViewController.swift */,
 				3E4507E91CBAB4110080A966 /* Main.storyboard */,
@@ -245,6 +251,17 @@
 					3E4507E11CBAB4110080A966 = {
 						CreatedOnToolsVersion = 7.3;
 						DevelopmentTeam = SA2C6S6NFP;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+							com.apple.Maps.iOS = {
+								enabled = 0;
+							};
+							com.apple.WAC = {
+								enabled = 1;
+							};
+						};
 					};
 					3E4507F31CBAB4110080A966 = {
 						CreatedOnToolsVersion = 7.3;
@@ -529,6 +546,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = MeEncontre/MeEncontre.entitlements;
 				INFOPLIST_FILE = MeEncontre/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.luicil.fernandes.MeEncontre;
@@ -540,6 +558,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = MeEncontre/MeEncontre.entitlements;
 				INFOPLIST_FILE = MeEncontre/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.luicil.fernandes.MeEncontre;
@@ -566,6 +585,7 @@
 				3E45081B1CBAB4110080A966 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		3E45081D1CBAB4110080A966 /* Build configuration list for PBXNativeTarget "MeEncontre WatchKit App" */ = {
 			isa = XCConfigurationList;
@@ -574,6 +594,7 @@
 				3E45081F1CBAB4110080A966 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		3E4508211CBAB4110080A966 /* Build configuration list for PBXNativeTarget "MeEncontre" */ = {
 			isa = XCConfigurationList;
@@ -582,6 +603,7 @@
 				3E4508231CBAB4110080A966 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

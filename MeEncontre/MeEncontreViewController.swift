@@ -27,9 +27,11 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
     let regionRadious : CLLocationDistance = 200
     
     var toStop : Bool = false
-    var flagRastrear : Bool = false
+    var flagRastrear : Bool = true
     var removeOverlays : Bool = false
-    var action : actions = actions.Localizacao
+    
+    var action : actions = actions.Rastrear
+    
     var pinColor : UIColor = UIColor.redColor()
     
     override func viewDidLoad() {
@@ -40,8 +42,7 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
         self.mapView.delegate = self
         self.mapView.showsScale = true
         self.mapView.showsCompass = true
-        self.mapView.removeAnnotations(self.mapView.annotations)
-        self.mapView.removeOverlays(self.mapView.overlays)
+        self.removeOverlaysAnnotations()
         
         self.locationManager.delegate = self
         self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
@@ -73,41 +74,33 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
             }
             
             if placemarks?.count > 0 {
+                let pm : CLPlacemark = placemarks![0] as CLPlacemark
                 if self.toStop {
                     self.locationManager.stopUpdatingLocation()
-                }
-                let pm : CLPlacemark = placemarks![0] as CLPlacemark
-                switch self.action {
-                case actions.Localizacao:
-                    if self.removeOverlays {
-                        self.mapView.removeAnnotations(self.mapView.annotations)
-                        self.mapView.removeOverlays(self.mapView.overlays)
-                    }
-                    self.centerMapOnLocation(pm.location!)
-                    let annotation = MKPointAnnotation()
-                    annotation.coordinate = pm.location!.coordinate
-                    annotation.title = pm.name
-                    annotation.subtitle = pm.subLocality
-                    self.mapView.addAnnotation(annotation)
-                case actions.Rastrear:
-                    if let oldLocationNew = oldLocation as CLLocation?{
-                        let oldCoordinates = oldLocationNew.coordinate
-                        let newCoordinates = newLocation.coordinate
-                        var area = [oldCoordinates, newCoordinates]
-                        let polyline = MKPolyline(coordinates: &area, count: area.count)
-                        self.mapView.addOverlay(polyline)
-                    }
-                case actions.OndeEstou:
-                    self.centerMapOnLocation(pm.location!)
-                default:
-                    break
-                }
-                if self.toStop {
+                    self.setAnnotation(pm)
                     self.action = actions.Nenhum
+                } else {
+                    if self.action == actions.OndeEstou {
+                        self.centerMapOnLocation(pm.location!)
+                    } else {
+                        if self.removeOverlays {
+                            self.removeOverlays = false
+                            self.removeOverlaysAnnotations()
+                            self.centerMapOnLocation(pm.location!)
+                            self.setAnnotation(pm)
+                        } else {
+                            if let oldLocationNew = oldLocation as CLLocation?{
+                                let oldCoordinates = oldLocationNew.coordinate
+                                let newCoordinates = newLocation.coordinate
+                                var area = [oldCoordinates, newCoordinates]
+                                let polyline = MKPolyline(coordinates: &area, count: area.count)
+                                self.mapView.addOverlay(polyline)
+                            }
+                        }
+                    }
                 }
             }
         })
-        
     }
     
     func locationManager(manager: CLLocationManager, didFailWithError error: NSError) {
@@ -164,6 +157,18 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
 
     }
     
+    func setAnnotation(pm : CLPlacemark) {
+        let annotation = MKPointAnnotation()
+        annotation.coordinate = pm.location!.coordinate
+        annotation.title = pm.name
+        annotation.subtitle = pm.subLocality
+        self.mapView.addAnnotation(annotation)
+    }
+    
+    func removeOverlaysAnnotations() {
+        self.mapView.removeAnnotations(self.mapView.annotations)
+        self.mapView.removeOverlays(self.mapView.overlays)
+    }
     
     @IBAction func actSegmentButton1(sender: UISegmentedControl) {
         switch sender.selectedSegmentIndex {
@@ -181,34 +186,26 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
     @IBAction func actSegmentButton2(sender: UISegmentedControl) {
         switch sender.selectedSegmentIndex {
         case 0:
-            self.showMe(false)
-            self.toStop = true
-            self.removeOverlays = true
-            self.pinColor = UIColor.blueColor()
-            action = actions.Localizacao
-            self.locationManager.startUpdatingLocation()
-            self.segmentButton2.setEnabled(true, forSegmentAtIndex: 1)
-        case 1:
-            self.toStop = flagRastrear
-            flagRastrear = !flagRastrear
-            self.removeOverlays = false
-            if flagRastrear {
-                self.segmentButton2.setTitle("Parar", forSegmentAtIndex: 1)
-                self.segmentButton2.setEnabled(false, forSegmentAtIndex: 0)
-                self.segmentButton2.setEnabled(false, forSegmentAtIndex: 2)
-                action = actions.Rastrear
+            if self.flagRastrear {
+                self.flagRastrear = false
+                self.toStop = false
+                self.action = actions.Rastrear
+                self.segmentButton2.setTitle("Parar Rastreamento", forSegmentAtIndex: 0)
+                self.segmentButton2.setEnabled(false, forSegmentAtIndex: 1)
+                self.showMe(true)
+                self.removeOverlays = true
+                self.pinColor = UIColor.greenColor()
+                self.removeOverlaysAnnotations()
                 self.locationManager.startUpdatingLocation()
             } else {
-                self.segmentButton2.setTitle("Rastrear", forSegmentAtIndex: 1)
-                self.segmentButton2.setEnabled(false, forSegmentAtIndex: 1)
-                self.segmentButton2.setEnabled(true, forSegmentAtIndex: 0)
-                self.segmentButton2.setEnabled(true, forSegmentAtIndex: 2)
                 self.pinColor = UIColor.redColor()
-                self.action = actions.Localizacao
+                self.toStop = true
+                self.showMe(false)
+                self.segmentButton2.setTitle("Iniciar Rastreamento", forSegmentAtIndex: 0)
+                self.segmentButton2.setEnabled(true, forSegmentAtIndex: 1)
+                self.flagRastrear = true
             }
-            self.showMe(flagRastrear)
-             self.locationManager.startUpdatingLocation()
-        case 2:
+        case 1:
             self.showMe(true)
             self.toStop = true
             action = actions.OndeEstou
@@ -218,7 +215,4 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
         }
         sender.selectedSegmentIndex = -1
     }
-    
-    
-
 }
