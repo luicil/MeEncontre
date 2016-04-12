@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3E2C8DDE1CBDA0F3003EF4C6 /* Building.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E2C8DDD1CBDA0F3003EF4C6 /* Building.swift */; };
 		3E4507E61CBAB4110080A966 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E4507E51CBAB4110080A966 /* AppDelegate.swift */; };
 		3E4507E81CBAB4110080A966 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E4507E71CBAB4110080A966 /* ViewController.swift */; };
 		3E4507EB1CBAB4110080A966 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3E4507E91CBAB4110080A966 /* Main.storyboard */; };
@@ -69,6 +70,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		3E2C8DDD1CBDA0F3003EF4C6 /* Building.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Building.swift; sourceTree = "<group>"; };
 		3E4507E21CBAB4110080A966 /* MeEncontre.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MeEncontre.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3E4507E51CBAB4110080A966 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3E4507E71CBAB4110080A966 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -145,6 +147,7 @@
 				3E4507EE1CBAB4110080A966 /* LaunchScreen.storyboard */,
 				3E4507F11CBAB4110080A966 /* Info.plist */,
 				3E4508241CBAB5F20080A966 /* MeEncontreViewController.swift */,
+				3E2C8DDD1CBDA0F3003EF4C6 /* Building.swift */,
 			);
 			path = MeEncontre;
 			sourceTree = "<group>";
@@ -331,6 +334,7 @@
 				3E4507E81CBAB4110080A966 /* ViewController.swift in Sources */,
 				3E4507E61CBAB4110080A966 /* AppDelegate.swift in Sources */,
 				3E4508251CBAB5F20080A966 /* MeEncontreViewController.swift in Sources */,
+				3E2C8DDE1CBDA0F3003EF4C6 /* Building.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

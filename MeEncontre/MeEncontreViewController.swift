@@ -11,7 +11,7 @@ import MapKit
 import CoreLocation
 
 class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate {
-
+    
     enum actions : Int {
         case Localizacao = 1
         case Rastrear = 2
@@ -29,6 +29,7 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
     var toStop : Bool = false
     var flagRastrear : Bool = true
     var removeOverlays : Bool = false
+    var contaErros : Int = 0
     
     var action : actions = actions.Rastrear
     
@@ -36,7 +37,7 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         // Do any additional setup after loading the view.
         
         self.mapView.delegate = self
@@ -47,48 +48,55 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
         self.locationManager.delegate = self
         self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
         self.locationManager.requestAlwaysAuthorization()
-
+        
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
     /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
+     // MARK: - Navigation
+     
+     // In a storyboard-based application, you will often want to do a little preparation before navigation
+     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+     // Get the new view controller using segue.destinationViewController.
+     // Pass the selected object to the new view controller.
+     }
+     */
     
     func locationManager(manager: CLLocationManager, didUpdateToLocation newLocation: CLLocation, fromLocation oldLocation: CLLocation) {
         
         CLGeocoder().reverseGeocodeLocation(manager.location!, completionHandler: { (placemarks, error) -> Void in
             
             if error != nil {
+                //self.showError(error!)
                 return
             }
             
             if placemarks?.count > 0 {
                 let pm : CLPlacemark = placemarks![0] as CLPlacemark
                 if self.toStop {
+                    if self.action != actions.OndeEstou {
+                        self.setAnnotation(pm)
+                    }
+                    //self.action = actions.Nenhum
                     self.locationManager.stopUpdatingLocation()
-                    self.setAnnotation(pm)
-                    self.action = actions.Nenhum
                 } else {
                     if self.action == actions.OndeEstou {
+                        self.action = actions.Nenhum
                         self.centerMapOnLocation(pm.location!)
                     } else {
                         if self.removeOverlays {
                             self.removeOverlays = false
                             self.removeOverlaysAnnotations()
-                            self.centerMapOnLocation(pm.location!)
+                            //self.centerMapOnLocation(pm.location!)
+
                             self.setAnnotation(pm)
-                        } else {
+                            
+                        }
+                        if (oldLocation.coordinate.latitude != 0 && oldLocation.coordinate.longitude != 0) {
                             if let oldLocationNew = oldLocation as CLLocation?{
                                 let oldCoordinates = oldLocationNew.coordinate
                                 let newCoordinates = newLocation.coordinate
@@ -97,6 +105,7 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
                                 self.mapView.addOverlay(polyline)
                             }
                         }
+                        self.centerMapOnLocation(pm.location!)
                     }
                 }
             }
@@ -104,19 +113,12 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
     }
     
     func locationManager(manager: CLLocationManager, didFailWithError error: NSError) {
-        let alert = UIAlertController(title: "Falha de Localização", message: "Impossível localizar\nVerifique sua conexão !\n\nErro: " + error.description, preferredStyle: .Alert)
-        
-        let OKAction = UIAlertAction(title: "OK", style: .Default) { (action:UIAlertAction!) in
-            return
-        }
-        alert.addAction(OKAction)
-        
-        self.presentViewController(alert, animated: true, completion:nil)
-
+        self.showError(error)
     }
     
     func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
-        if let annotation = annotation as? MKPointAnnotation {
+        //if let annotation = annotation as? MKPointAnnotation {
+        if let annotation = annotation as? Building {
             let identifier = "pin"
             var view : MKPinAnnotationView
             if let dequeuedView = mapView.dequeueReusableAnnotationViewWithIdentifier(identifier) as? MKPinAnnotationView {
@@ -124,6 +126,8 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
             } else {
                 view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
                 view.canShowCallout = true
+                view.calloutOffset = CGPoint(x: 0, y: 0)
+                view.rightCalloutAccessoryView = UIButton(type: .DetailDisclosure) as UIView
             }
             view.pinTintColor = pinColor
             return view
@@ -135,16 +139,23 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
         let pr = MKPolylineRenderer(overlay: overlay)
         if (overlay is MKPolyline) {
             //let pr = MKPolylineRenderer(overlay: overlay)
-            pr.strokeColor = UIColor.redColor()
-            pr.lineWidth = 5
+            pr.strokeColor = UIColor.purpleColor()
+            pr.lineWidth = 2
             return pr
         }
         return pr
     }
     
+    func mapView(mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+        let location = view.annotation as! Building
+        let launchOptions = [MKLaunchOptionsDirectionsModeKey: MKLaunchOptionsDirectionsModeDriving]
+        location.mapItem().openInMapsWithLaunchOptions(launchOptions)
+    }
+    
     func centerMapOnLocation(location: CLLocation) {
-        let coordinateRegion = MKCoordinateRegionMakeWithDistance(location.coordinate, regionRadious * 2.0, regionRadious * 2.0)
-        self.mapView.setRegion(coordinateRegion, animated: true)
+        let span = MKCoordinateSpanMake(0.010, 0.010)
+        let region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude), span: span)
+        self.mapView.setRegion(region, animated: true)
     }
     
     func showMe(show : Bool = true) {
@@ -154,20 +165,38 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
         } else {
             self.mapView.userTrackingMode = MKUserTrackingMode.None
         }
-
+        
     }
     
     func setAnnotation(pm : CLPlacemark) {
-        let annotation = MKPointAnnotation()
-        annotation.coordinate = pm.location!.coordinate
-        annotation.title = pm.name
-        annotation.subtitle = pm.subLocality
-        self.mapView.addAnnotation(annotation)
+//        let annotation = MKPointAnnotation()
+//        annotation.coordinate = pm.location!.coordinate
+//        annotation.title = pm.name
+//        annotation.subtitle = pm.subLocality
+//        self.mapView.addAnnotation(annotation)
+        
+        let title = pm.name
+        let subtitle = pm.locality
+        let coordinate = pm.location?.coordinate
+        let build = Building(title: title!, subtitle: subtitle!, coordinate: coordinate!)
+        self.mapView.addAnnotation(build)
+        
     }
     
     func removeOverlaysAnnotations() {
         self.mapView.removeAnnotations(self.mapView.annotations)
         self.mapView.removeOverlays(self.mapView.overlays)
+    }
+    
+    func showError(error: NSError) {
+        let alert = UIAlertController(title: "Falha de Localização", message: "Impossível localizar\nVerifique sua conexão !\n\nErro: " + error.description, preferredStyle: .Alert)
+        
+        let OKAction = UIAlertAction(title: "OK", style: .Default) { (action:UIAlertAction!) in
+            return
+        }
+        alert.addAction(OKAction)
+        
+        self.presentViewController(alert, animated: true, completion:nil)
     }
     
     @IBAction func actSegmentButton1(sender: UISegmentedControl) {
