@@ -36,8 +36,9 @@
                                 <rect key="frame" x="20" y="527" width="560" height="29"/>
                                 <color key="backgroundColor" red="0.93849806670000002" green="1" blue="0.95146212129999996" alpha="1" colorSpace="calibratedRGB"/>
                                 <segments>
-                                    <segment title="Iniciar Rastreamento"/>
+                                    <segment title="Iniciar"/>
                                     <segment title="Onde Estou ?"/>
+                                    <segment title="Reset"/>
                                 </segments>
                                 <connections>
                                     <action selector="actSegmentButton2:" destination="BYZ-38-t0r" eventType="valueChanged" id="zRQ-b8-xfe"/>

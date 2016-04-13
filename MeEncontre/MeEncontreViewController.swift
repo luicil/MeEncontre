@@ -23,12 +23,14 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
     @IBOutlet weak var segmentButton1: UISegmentedControl!
     @IBOutlet weak var segmentButton2: UISegmentedControl!
     
-    let locationManager : CLLocationManager = CLLocationManager()
+    var locationManager : CLLocationManager = CLLocationManager()
+    
     let regionRadious : CLLocationDistance = 200
     
     var toStop : Bool = false
     var flagRastrear : Bool = true
     var removeOverlays : Bool = false
+    var flagErro : Bool = false
     var contaErros : Int = 0
     
     var action : actions = actions.Rastrear
@@ -71,17 +73,22 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
         CLGeocoder().reverseGeocodeLocation(manager.location!, completionHandler: { (placemarks, error) -> Void in
             
             if error != nil {
-                //self.showError(error!)
+//                if !self.flagErro {
+//                    if self.action != actions.Nenhum {
+//                        self.flagErro = true
+//                        self.showError(error!)
+//                    }
+//                }
                 return
             }
             
             if placemarks?.count > 0 {
                 let pm : CLPlacemark = placemarks![0] as CLPlacemark
                 if self.toStop {
-                    if self.action != actions.OndeEstou {
+                    if self.action == actions.Rastrear {
                         self.setAnnotation(pm)
                     }
-                    //self.action = actions.Nenhum
+                    self.action = actions.Nenhum
                     self.locationManager.stopUpdatingLocation()
                 } else {
                     if self.action == actions.OndeEstou {
@@ -113,7 +120,9 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
     }
     
     func locationManager(manager: CLLocationManager, didFailWithError error: NSError) {
+        self.flagErro = true
         self.showError(error)
+        self.locationManager.startUpdatingLocation()
     }
     
     func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
@@ -140,7 +149,7 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
         if (overlay is MKPolyline) {
             //let pr = MKPolylineRenderer(overlay: overlay)
             pr.strokeColor = UIColor.purpleColor()
-            pr.lineWidth = 2
+            pr.lineWidth = 4
             return pr
         }
         return pr
@@ -188,15 +197,32 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
         self.mapView.removeOverlays(self.mapView.overlays)
     }
     
+    func reset() {
+        self.showMe(false)
+        self.action = actions.Nenhum
+        self.locationManager.stopUpdatingLocation()
+        self.removeOverlaysAnnotations()
+        self.segmentButton2.setTitle("Iniciar", forSegmentAtIndex: 0)
+        self.segmentButton2.setEnabled(true, forSegmentAtIndex: 1)
+    }
+    
     func showError(error: NSError) {
-        let alert = UIAlertController(title: "Falha de Localização", message: "Impossível localizar\nVerifique sua conexão !\n\nErro: " + error.description, preferredStyle: .Alert)
-        
-        let OKAction = UIAlertAction(title: "OK", style: .Default) { (action:UIAlertAction!) in
-            return
+        if self.flagErro {
+            self.flagErro = false
+            let alert = UIAlertController(title: "Falha de Localização", message: "Impossível localizar\nVerifique sua conexão !\n\nErro: " + error.description + "\n\nDeseja continuar com a localização ?", preferredStyle: .Alert)
+            let OKAction = UIAlertAction(title: "Sim", style: .Default) { (action:UIAlertAction!) in
+                return
+            }
+            alert.addAction(OKAction)
+
+            let NOKAction = UIAlertAction(title: "Não", style: .Destructive) { (action:UIAlertAction!) in
+                self.reset()
+                return
+            }
+            alert.addAction(NOKAction)
+            
+            self.presentViewController(alert, animated: true, completion:nil)
         }
-        alert.addAction(OKAction)
-        
-        self.presentViewController(alert, animated: true, completion:nil)
     }
     
     @IBAction func actSegmentButton1(sender: UISegmentedControl) {
@@ -219,7 +245,7 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
                 self.flagRastrear = false
                 self.toStop = false
                 self.action = actions.Rastrear
-                self.segmentButton2.setTitle("Parar Rastreamento", forSegmentAtIndex: 0)
+                self.segmentButton2.setTitle("Parar", forSegmentAtIndex: 0)
                 self.segmentButton2.setEnabled(false, forSegmentAtIndex: 1)
                 self.showMe(true)
                 self.removeOverlays = true
@@ -230,7 +256,7 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
                 self.pinColor = UIColor.redColor()
                 self.toStop = true
                 self.showMe(false)
-                self.segmentButton2.setTitle("Iniciar Rastreamento", forSegmentAtIndex: 0)
+                self.segmentButton2.setTitle("Iniciar", forSegmentAtIndex: 0)
                 self.segmentButton2.setEnabled(true, forSegmentAtIndex: 1)
                 self.flagRastrear = true
             }
@@ -239,6 +265,8 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
             self.toStop = true
             action = actions.OndeEstou
             self.locationManager.startUpdatingLocation()
+        case 2:
+            self.reset()
         default:
             break
         }
