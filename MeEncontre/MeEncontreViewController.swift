@@ -23,18 +23,17 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
     @IBOutlet weak var segmentButton1: UISegmentedControl!
     @IBOutlet weak var segmentButton2: UISegmentedControl!
     
-    var locationManager : CLLocationManager = CLLocationManager()
-    
     let regionRadious : CLLocationDistance = 200
     
+    var locationManager : CLLocationManager = CLLocationManager()
+    var startLocation: CLLocation!
     var toStop : Bool = false
     var flagRastrear : Bool = true
     var removeOverlays : Bool = false
     var flagErro : Bool = false
-    var contaErros : Int = 0
-    
+    var contaErro1 : Int = 0
+    var contaErro2 : Int = 0
     var action : actions = actions.Rastrear
-    
     var pinColor : UIColor = UIColor.redColor()
     
     override func viewDidLoad() {
@@ -68,17 +67,21 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
      }
      */
     
-    func locationManager(manager: CLLocationManager, didUpdateToLocation newLocation: CLLocation, fromLocation oldLocation: CLLocation) {
-        
-        CLGeocoder().reverseGeocodeLocation(manager.location!, completionHandler: { (placemarks, error) -> Void in
+    func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        let latestLocation: CLLocation = locations[locations.count - 1]
+        CLGeocoder().reverseGeocodeLocation(latestLocation, completionHandler: { (placemarks, error) -> Void in
             
             if error != nil {
-//                if !self.flagErro {
-//                    if self.action != actions.Nenhum {
-//                        self.flagErro = true
-//                        self.showError(error!)
-//                    }
-//                }
+                if !self.flagErro {
+                    if self.action != actions.Nenhum {
+                        self.contaErro1 += 1
+                        if self.contaErro1 >= 5 {
+                            self.contaErro1 = 0
+                            self.flagErro = true
+                            self.showError(error!)
+                        }
+                    }
+                }
                 return
             }
             
@@ -93,25 +96,28 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
                 } else {
                     if self.action == actions.OndeEstou {
                         self.action = actions.Nenhum
+                        //self.setAnnotation(pm)
                         self.centerMapOnLocation(pm.location!)
                     } else {
                         if self.removeOverlays {
                             self.removeOverlays = false
                             self.removeOverlaysAnnotations()
                             //self.centerMapOnLocation(pm.location!)
-
+                            
                             self.setAnnotation(pm)
                             
                         }
-                        if (oldLocation.coordinate.latitude != 0 && oldLocation.coordinate.longitude != 0) {
-                            if let oldLocationNew = oldLocation as CLLocation?{
+                        
+                        if self.startLocation != nil {
+                            if let oldLocationNew = self.startLocation as CLLocation?{
                                 let oldCoordinates = oldLocationNew.coordinate
-                                let newCoordinates = newLocation.coordinate
+                                let newCoordinates = latestLocation.coordinate
                                 var area = [oldCoordinates, newCoordinates]
                                 let polyline = MKPolyline(coordinates: &area, count: area.count)
                                 self.mapView.addOverlay(polyline)
                             }
                         }
+                        self.startLocation = latestLocation
                         self.centerMapOnLocation(pm.location!)
                     }
                 }
@@ -120,15 +126,18 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
     }
     
     func locationManager(manager: CLLocationManager, didFailWithError error: NSError) {
-        self.flagErro = true
-        self.showError(error)
-        self.locationManager.startUpdatingLocation()
+        self.contaErro2 += 1
+        if self.contaErro2 >= 5 {
+            self.contaErro2 = 0
+            self.flagErro = true
+            self.showError(error)
+            self.locationManager.startUpdatingLocation()
+        }
     }
     
     func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
-        //if let annotation = annotation as? MKPointAnnotation {
         if let annotation = annotation as? Building {
-            let identifier = "pin"
+            let identifier : String = "pin"
             var view : MKPinAnnotationView
             if let dequeuedView = mapView.dequeueReusableAnnotationViewWithIdentifier(identifier) as? MKPinAnnotationView {
                 view = dequeuedView
@@ -136,6 +145,7 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
                 view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
                 view.canShowCallout = true
                 view.calloutOffset = CGPoint(x: 0, y: 0)
+                view.animatesDrop = true
                 view.rightCalloutAccessoryView = UIButton(type: .DetailDisclosure) as UIView
             }
             view.pinTintColor = pinColor
@@ -162,7 +172,7 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
     }
     
     func centerMapOnLocation(location: CLLocation) {
-        let span = MKCoordinateSpanMake(0.010, 0.010)
+        let span = MKCoordinateSpanMake(0.020, 0.020)
         let region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude), span: span)
         self.mapView.setRegion(region, animated: true)
     }
@@ -174,16 +184,9 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
         } else {
             self.mapView.userTrackingMode = MKUserTrackingMode.None
         }
-        
     }
     
     func setAnnotation(pm : CLPlacemark) {
-//        let annotation = MKPointAnnotation()
-//        annotation.coordinate = pm.location!.coordinate
-//        annotation.title = pm.name
-//        annotation.subtitle = pm.subLocality
-//        self.mapView.addAnnotation(annotation)
-        
         let title = pm.name
         let subtitle = pm.locality
         let coordinate = pm.location?.coordinate
@@ -193,6 +196,7 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
     }
     
     func removeOverlaysAnnotations() {
+        self.startLocation = nil
         self.mapView.removeAnnotations(self.mapView.annotations)
         self.mapView.removeOverlays(self.mapView.overlays)
     }
@@ -208,15 +212,17 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
     
     func showError(error: NSError) {
         if self.flagErro {
-            self.flagErro = false
+            
             let alert = UIAlertController(title: "Falha de Localização", message: "Impossível localizar\nVerifique sua conexão !\n\nErro: " + error.description + "\n\nDeseja continuar com a localização ?", preferredStyle: .Alert)
             let OKAction = UIAlertAction(title: "Sim", style: .Default) { (action:UIAlertAction!) in
+                self.flagErro = false
                 return
             }
             alert.addAction(OKAction)
 
             let NOKAction = UIAlertAction(title: "Não", style: .Destructive) { (action:UIAlertAction!) in
                 self.reset()
+                self.flagErro = false
                 return
             }
             alert.addAction(NOKAction)
