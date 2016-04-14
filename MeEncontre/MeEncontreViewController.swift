@@ -27,10 +27,12 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
     
     var locationManager : CLLocationManager = CLLocationManager()
     var startLocation: CLLocation!
+    var locations = [CLLocationCoordinate2D]()
     var toStop : Bool = false
     var flagRastrear : Bool = true
     var removeOverlays : Bool = false
     var flagErro : Bool = false
+    var flagCenterMapOnLocation : Bool = true
     var contaErro1 : Int = 0
     var contaErro2 : Int = 0
     var action : actions = actions.Rastrear
@@ -47,6 +49,7 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
         self.removeOverlaysAnnotations()
         
         self.locationManager.delegate = self
+        self.checkDevice()
         self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
         self.locationManager.requestAlwaysAuthorization()
         
@@ -108,17 +111,14 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
                             
                         }
                         
-                        if self.startLocation != nil {
-                            if let oldLocationNew = self.startLocation as CLLocation?{
-                                let oldCoordinates = oldLocationNew.coordinate
-                                let newCoordinates = latestLocation.coordinate
-                                var area = [oldCoordinates, newCoordinates]
-                                let polyline = MKPolyline(coordinates: &area, count: area.count)
-                                self.mapView.addOverlay(polyline)
-                            }
-                        }
+                        let newCoordinates : CLLocationCoordinate2D = latestLocation.coordinate
+                        self.locations.append(newCoordinates)
+                        let polyline = MKPolyline(coordinates: &self.locations, count: self.locations.count)
                         self.startLocation = latestLocation
-                        self.centerMapOnLocation(pm.location!)
+                        if UIApplication.sharedApplication().applicationState == .Active {
+                            self.mapView.addOverlay(polyline)
+                            self.centerMapOnLocation(pm.location!)
+                        }
                     }
                 }
             }
@@ -174,7 +174,8 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
     func centerMapOnLocation(location: CLLocation) {
         let span = MKCoordinateSpanMake(0.020, 0.020)
         let region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude), span: span)
-        self.mapView.setRegion(region, animated: true)
+        self.mapView.setRegion(region, animated: self.flagCenterMapOnLocation)
+        self.flagCenterMapOnLocation = true
     }
     
     func showMe(show : Bool = true) {
@@ -197,6 +198,7 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
     
     func removeOverlaysAnnotations() {
         self.startLocation = nil
+        self.locations.removeAll()
         self.mapView.removeAnnotations(self.mapView.annotations)
         self.mapView.removeOverlays(self.mapView.overlays)
     }
@@ -212,22 +214,36 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
     
     func showError(error: NSError) {
         if self.flagErro {
-            
-            let alert = UIAlertController(title: "Falha de Localização", message: "Impossível localizar\nVerifique sua conexão !\n\nErro: " + error.description + "\n\nDeseja continuar com a localização ?", preferredStyle: .Alert)
-            let OKAction = UIAlertAction(title: "Sim", style: .Default) { (action:UIAlertAction!) in
+            if UIApplication.sharedApplication().applicationState == .Active {
+                let alert = UIAlertController(title: "Falha de Localização", message: "Impossível localizar\nVerifique sua conexão !\n\nErro: " + error.description + "\n\nDeseja continuar com a localização ?", preferredStyle: .Alert)
+                let OKAction = UIAlertAction(title: "Sim", style: .Default) { (action:UIAlertAction!) in
+                    self.flagErro = false
+                    return
+                }
+                alert.addAction(OKAction)
+                
+                let NOKAction = UIAlertAction(title: "Não", style: .Destructive) { (action:UIAlertAction!) in
+                    self.reset()
+                    self.flagErro = false
+                    return
+                }
+                alert.addAction(NOKAction)
+                
+                self.presentViewController(alert, animated: true, completion:nil)
+            } else {
                 self.flagErro = false
-                return
             }
-            alert.addAction(OKAction)
-
-            let NOKAction = UIAlertAction(title: "Não", style: .Destructive) { (action:UIAlertAction!) in
-                self.reset()
-                self.flagErro = false
-                return
-            }
-            alert.addAction(NOKAction)
-            
-            self.presentViewController(alert, animated: true, completion:nil)
+        }
+    }
+    
+    func checkDevice() {
+        let Device = UIDevice.currentDevice()
+        let iosVersion = Double(Device.systemVersion) ?? 0
+        
+        let iOS9 = iosVersion >= 9
+        if iOS9{
+            self.locationManager.allowsBackgroundLocationUpdates = true
+            self.locationManager.pausesLocationUpdatesAutomatically = false
         }
     }
     
@@ -248,6 +264,8 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
         switch sender.selectedSegmentIndex {
         case 0:
             if self.flagRastrear {
+                UIApplication.sharedApplication().idleTimerDisabled = true
+                self.flagCenterMapOnLocation = false
                 self.flagRastrear = false
                 self.toStop = false
                 self.action = actions.Rastrear
@@ -259,6 +277,7 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
                 self.removeOverlaysAnnotations()
                 self.locationManager.startUpdatingLocation()
             } else {
+                UIApplication.sharedApplication().idleTimerDisabled = false
                 self.pinColor = UIColor.redColor()
                 self.toStop = true
                 self.showMe(false)
