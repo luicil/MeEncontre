@@ -23,7 +23,11 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
     @IBOutlet weak var segmentButton1: UISegmentedControl!
     @IBOutlet weak var segmentButton2: UISegmentedControl!
     
-    let regionRadious : CLLocationDistance = 200
+    let regionRadious : CLLocationDistance = 5
+    let spanMake : Double = 0.005
+    let nErros : Int = 5
+    let overlayLineWidth : CGFloat = 4
+    let iosVer : Double = 9
     
     var locationManager : CLLocationManager = CLLocationManager()
     var startLocation: CLLocation!
@@ -32,7 +36,7 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
     var flagRastrear : Bool = true
     var removeOverlays : Bool = false
     var flagErro : Bool = false
-    var flagCenterMapOnLocation : Bool = true
+    //var flagCenterMapOnLocation : Bool = true
     var contaErro1 : Int = 0
     var contaErro2 : Int = 0
     var action : actions = actions.Rastrear
@@ -46,6 +50,10 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
         self.mapView.delegate = self
         self.mapView.showsScale = true
         self.mapView.showsCompass = true
+        //self.mapView.showsBuildings = true
+        self.mapView.showsPointsOfInterest = true
+        //self.mapView.showsTraffic = true
+    
         self.removeOverlaysAnnotations()
         
         self.locationManager.delegate = self
@@ -78,7 +86,7 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
                 if !self.flagErro {
                     if self.action != actions.Nenhum {
                         self.contaErro1 += 1
-                        if self.contaErro1 >= 5 {
+                        if self.contaErro1 >= self.nErros {
                             self.contaErro1 = 0
                             self.flagErro = true
                             self.showError(error!)
@@ -127,7 +135,7 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
     
     func locationManager(manager: CLLocationManager, didFailWithError error: NSError) {
         self.contaErro2 += 1
-        if self.contaErro2 >= 5 {
+        if self.contaErro2 >= self.nErros {
             self.contaErro2 = 0
             self.flagErro = true
             self.showError(error)
@@ -159,7 +167,7 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
         if (overlay is MKPolyline) {
             //let pr = MKPolylineRenderer(overlay: overlay)
             pr.strokeColor = UIColor.purpleColor()
-            pr.lineWidth = 4
+            pr.lineWidth = self.overlayLineWidth
             return pr
         }
         return pr
@@ -172,10 +180,11 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
     }
     
     func centerMapOnLocation(location: CLLocation) {
-        let span = MKCoordinateSpanMake(0.020, 0.020)
+        let span = MKCoordinateSpanMake(self.spanMake, self.spanMake)
         let region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude), span: span)
-        self.mapView.setRegion(region, animated: self.flagCenterMapOnLocation)
-        self.flagCenterMapOnLocation = true
+        //self.mapView.setRegion(region, animated: self.flagCenterMapOnLocation)
+        self.mapView.setRegion(region, animated: true)
+        //self.flagCenterMapOnLocation = true
     }
     
     func showMe(show : Bool = true) {
@@ -213,34 +222,40 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
     }
     
     func showError(error: NSError) {
-        if self.flagErro {
-            if UIApplication.sharedApplication().applicationState == .Active {
-                let alert = UIAlertController(title: "Falha de Localização", message: "Impossível localizar\nVerifique sua conexão !\n\nErro: " + error.description + "\n\nDeseja continuar com a localização ?", preferredStyle: .Alert)
-                let OKAction = UIAlertAction(title: "Sim", style: .Default) { (action:UIAlertAction!) in
-                    self.flagErro = false
-                    return
-                }
-                alert.addAction(OKAction)
-                
-                let NOKAction = UIAlertAction(title: "Não", style: .Destructive) { (action:UIAlertAction!) in
-                    self.reset()
-                    self.flagErro = false
-                    return
-                }
-                alert.addAction(NOKAction)
-                
-                self.presentViewController(alert, animated: true, completion:nil)
-            } else {
-                self.flagErro = false
-            }
-        }
+        //
+        // Está dando erro mas continua a rastrear sem problemas.
+        // Mensagem desabilitada.
+        self.flagErro = false
+        return
+        
+//        if self.flagErro {
+//            if UIApplication.sharedApplication().applicationState == .Active {
+//                let alert = UIAlertController(title: "Falha de Localização", message: "Impossível localizar\nVerifique sua conexão !\n\nErro: " + error.description + "\n\nDeseja continuar com a localização ?", preferredStyle: .Alert)
+//                let OKAction = UIAlertAction(title: "Sim", style: .Default) { (action:UIAlertAction!) in
+//                    self.flagErro = false
+//                    return
+//                }
+//                alert.addAction(OKAction)
+//                
+//                let NOKAction = UIAlertAction(title: "Não", style: .Destructive) { (action:UIAlertAction!) in
+//                    self.reset()
+//                    self.flagErro = false
+//                    return
+//                }
+//                alert.addAction(NOKAction)
+//                
+//                self.presentViewController(alert, animated: true, completion:nil)
+//            } else {
+//                self.flagErro = false
+//            }
+//        }
     }
     
     func checkDevice() {
         let Device = UIDevice.currentDevice()
         let iosVersion = Double(Device.systemVersion) ?? 0
         
-        let iOS9 = iosVersion >= 9
+        let iOS9 = iosVersion >= self.iosVer
         if iOS9{
             self.locationManager.allowsBackgroundLocationUpdates = true
             self.locationManager.pausesLocationUpdatesAutomatically = false
@@ -265,7 +280,7 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
         case 0:
             if self.flagRastrear {
                 UIApplication.sharedApplication().idleTimerDisabled = true
-                self.flagCenterMapOnLocation = false
+                //self.flagCenterMapOnLocation = false
                 self.flagRastrear = false
                 self.toStop = false
                 self.action = actions.Rastrear
