@@ -23,15 +23,22 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
     @IBOutlet weak var segmentButton1: UISegmentedControl!
     @IBOutlet weak var segmentButton2: UISegmentedControl!
     
-    let regionRadious : CLLocationDistance = 5
+    let locationManager : CLLocationManager = CLLocationManager()
+    let regionRadious : CLLocationDistance = 100
     let spanMake : Double = 0.005
     let nErros : Int = 5
-    let overlayLineWidth : CGFloat = 4
+    let overlayLineWidth : CGFloat = 5
     let iosVer : Double = 9
+    let distanceFilter : Double = 10.0
     
-    var locationManager : CLLocationManager = CLLocationManager()
+//    let distance: CLLocationDistance = 650
+//    let pitch: CGFloat = 30
+//    let heading = 90.0
+    
+    //var locationManager : CLLocationManager = CLLocationManager()
     var startLocation: CLLocation!
     var locations = [CLLocationCoordinate2D]()
+    var pinColor : UIColor = UIColor.redColor()
     var toStop : Bool = false
     var flagRastrear : Bool = true
     var removeOverlays : Bool = false
@@ -40,7 +47,7 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
     var contaErro1 : Int = 0
     var contaErro2 : Int = 0
     var action : actions = actions.Rastrear
-    var pinColor : UIColor = UIColor.redColor()
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -50,7 +57,7 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
         self.mapView.delegate = self
         self.mapView.showsScale = true
         self.mapView.showsCompass = true
-        //self.mapView.showsBuildings = true
+        self.mapView.showsBuildings = true
         self.mapView.showsPointsOfInterest = true
         //self.mapView.showsTraffic = true
     
@@ -58,7 +65,9 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
         
         self.locationManager.delegate = self
         self.checkDevice()
-        self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        self.locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
+        self.locationManager.activityType = CLActivityType.AutomotiveNavigation
+        self.locationManager.distanceFilter = self.distanceFilter
         self.locationManager.requestAlwaysAuthorization()
         
     }
@@ -185,6 +194,15 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
         //self.mapView.setRegion(region, animated: self.flagCenterMapOnLocation)
         self.mapView.setRegion(region, animated: true)
         //self.flagCenterMapOnLocation = true
+        
+        
+//        let camera = MKMapCamera(lookingAtCenterCoordinate: CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude),
+//                                 fromDistance: distance,
+//                                 pitch: pitch,
+//                                 heading: heading)
+//        
+//        mapView.camera = camera
+        
     }
     
     func showMe(show : Bool = true) {
@@ -258,7 +276,7 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
         let iOS9 = iosVersion >= self.iosVer
         if iOS9{
             self.locationManager.allowsBackgroundLocationUpdates = true
-            self.locationManager.pausesLocationUpdatesAutomatically = false
+            self.locationManager.pausesLocationUpdatesAutomatically = true
         }
     }
     
