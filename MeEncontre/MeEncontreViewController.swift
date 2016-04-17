@@ -27,7 +27,7 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
     
     
     let locationManager : CLLocationManager = CLLocationManager()
-    let regionRadious : CLLocationDistance = 100
+    let regionRadious : CLLocationDistance = 0
     let spanMake : Double = 0.005
     let nErros : Int = 5
     let overlayLineWidth : CGFloat = 5
@@ -79,19 +79,19 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
         CLGeocoder().reverseGeocodeLocation(latestLocation, completionHandler: { (placemarks, error) -> Void in
             
             if error != nil {
-                if !self.flagErro {
-                    if self.action != actions.Nenhum {
-                        self.contaErro1 += 1
-                        if self.contaErro1 >= self.nErros {
-                            self.contaErro1 = 0
-                            self.flagErro = true
-                            self.showError(error!)
-                        }
-                    }
-                }
+//                if !self.flagErro {
+//                    if self.action != actions.Nenhum {
+//                        self.contaErro1 += 1
+//                        if self.contaErro1 >= self.nErros {
+//                            self.contaErro1 = 0
+//                            self.flagErro = true
+//                            self.showError(error!)
+//                        }
+//                    }
+//                }
                 return
             }
-            
+
             if placemarks?.count > 0 {
                 self.viewCarregando.hidden = true
                 let pm : CLPlacemark = placemarks![0] as CLPlacemark
@@ -117,6 +117,7 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
                     }
                 }
             }
+            
         })
     }
     
@@ -136,15 +137,14 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
             var view : MKPinAnnotationView
             if let dequeuedView = mapView.dequeueReusableAnnotationViewWithIdentifier(identifier) as? MKPinAnnotationView {
                 view = dequeuedView
-                view.pinTintColor = annotation.pinColor
             } else {
                 view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
                 view.canShowCallout = true
                 view.calloutOffset = CGPoint(x: 0, y: 0)
                 view.animatesDrop = true
-                view.pinTintColor = annotation.pinColor
                 view.rightCalloutAccessoryView = UIButton(type: .DetailDisclosure) as UIView
             }
+            view.pinTintColor = annotation.pinColor
             return view
         }
         return nil
@@ -188,6 +188,7 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
         let coordinate = pm.location?.coordinate
         let build = Building(title: title!, subtitle: subtitle!, coordinate: coordinate!, pinColor: self.pinColor!)
         self.mapView.addAnnotation(build)
+        self.centerMapOnLocation(pm.location!)
     }
     
     func removeOverlaysAnnotations() {
@@ -263,9 +264,9 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
     }
     
     @IBAction func actSegmentButton2(sender: UISegmentedControl) {
-        self.viewCarregando.hidden = false
         switch sender.selectedSegmentIndex {
         case 0:
+            self.viewCarregando.hidden = false
             if self.flagRastrear {
                 self.pinColor = UIColor.greenColor()
                 self.flagRastrear = false
@@ -290,6 +291,7 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
                 self.locationManager.requestLocation()
             }
         case 1:
+            self.viewCarregando.hidden = false
             self.showMe(true)
             self.toStop = true
             action = actions.OndeEstou
