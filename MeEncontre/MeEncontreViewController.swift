@@ -22,6 +22,9 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var segmentButton1: UISegmentedControl!
     @IBOutlet weak var segmentButton2: UISegmentedControl!
+    @IBOutlet weak var viewCarregando: UIView!
+    @IBOutlet weak var activityCarregando: UIActivityIndicatorView!
+    
     
     let locationManager : CLLocationManager = CLLocationManager()
     let regionRadious : CLLocationDistance = 100
@@ -30,24 +33,18 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
     let overlayLineWidth : CGFloat = 5
     let iosVer : Double = 9
     let distanceFilter : Double = 10.0
+    let overlayStrokeColor : UIColor = UIColor.blueColor()
     
-//    let distance: CLLocationDistance = 650
-//    let pitch: CGFloat = 30
-//    let heading = 90.0
-    
-    //var locationManager : CLLocationManager = CLLocationManager()
     var startLocation: CLLocation!
     var locations = [CLLocationCoordinate2D]()
-    var pinColor : UIColor = UIColor.redColor()
+    var pinColor : UIColor?
     var toStop : Bool = false
     var flagRastrear : Bool = true
     var removeOverlays : Bool = false
     var flagErro : Bool = false
-    //var flagCenterMapOnLocation : Bool = true
     var contaErro1 : Int = 0
     var contaErro2 : Int = 0
     var action : actions = actions.Rastrear
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -77,16 +74,6 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
         // Dispose of any resources that can be recreated.
     }
     
-    /*
-     // MARK: - Navigation
-     
-     // In a storyboard-based application, you will often want to do a little preparation before navigation
-     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-     // Get the new view controller using segue.destinationViewController.
-     // Pass the selected object to the new view controller.
-     }
-     */
-    
     func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let latestLocation: CLLocation = locations[locations.count - 1]
         CLGeocoder().reverseGeocodeLocation(latestLocation, completionHandler: { (placemarks, error) -> Void in
@@ -106,36 +93,27 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
             }
             
             if placemarks?.count > 0 {
+                self.viewCarregando.hidden = true
                 let pm : CLPlacemark = placemarks![0] as CLPlacemark
                 if self.toStop {
-                    if self.action == actions.Rastrear {
+                    if self.action != actions.Nenhum {
                         self.setAnnotation(pm)
                     }
                     self.action = actions.Nenhum
-                    self.locationManager.stopUpdatingLocation()
                 } else {
-                    if self.action == actions.OndeEstou {
-                        self.action = actions.Nenhum
-                        //self.setAnnotation(pm)
-                        self.centerMapOnLocation(pm.location!)
-                    } else {
-                        if self.removeOverlays {
-                            self.removeOverlays = false
-                            self.removeOverlaysAnnotations()
-                            //self.centerMapOnLocation(pm.location!)
-                            
-                            self.setAnnotation(pm)
-                            
-                        }
-                        
-                        let newCoordinates : CLLocationCoordinate2D = latestLocation.coordinate
-                        self.locations.append(newCoordinates)
+                    if self.removeOverlays {
+                        self.removeOverlays = false
+                        self.removeOverlaysAnnotations()
+                        self.setAnnotation(pm)
+                    }
+                    
+                    let newCoordinates : CLLocationCoordinate2D = latestLocation.coordinate
+                    self.locations.append(newCoordinates)
+                    self.startLocation = latestLocation
+                    if UIApplication.sharedApplication().applicationState == .Active {
                         let polyline = MKPolyline(coordinates: &self.locations, count: self.locations.count)
-                        self.startLocation = latestLocation
-                        if UIApplication.sharedApplication().applicationState == .Active {
-                            self.mapView.addOverlay(polyline)
-                            self.centerMapOnLocation(pm.location!)
-                        }
+                        self.mapView.addOverlay(polyline)
+                        self.centerMapOnLocation(pm.location!)
                     }
                 }
             }
@@ -158,14 +136,15 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
             var view : MKPinAnnotationView
             if let dequeuedView = mapView.dequeueReusableAnnotationViewWithIdentifier(identifier) as? MKPinAnnotationView {
                 view = dequeuedView
+                view.pinTintColor = annotation.pinColor
             } else {
                 view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
                 view.canShowCallout = true
                 view.calloutOffset = CGPoint(x: 0, y: 0)
                 view.animatesDrop = true
+                view.pinTintColor = annotation.pinColor
                 view.rightCalloutAccessoryView = UIButton(type: .DetailDisclosure) as UIView
             }
-            view.pinTintColor = pinColor
             return view
         }
         return nil
@@ -174,8 +153,7 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
     func mapView(mapView: MKMapView, rendererForOverlay overlay: MKOverlay) -> MKOverlayRenderer {
         let pr = MKPolylineRenderer(overlay: overlay)
         if (overlay is MKPolyline) {
-            //let pr = MKPolylineRenderer(overlay: overlay)
-            pr.strokeColor = UIColor.purpleColor()
+            pr.strokeColor = self.overlayStrokeColor
             pr.lineWidth = self.overlayLineWidth
             return pr
         }
@@ -191,17 +169,7 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
     func centerMapOnLocation(location: CLLocation) {
         let span = MKCoordinateSpanMake(self.spanMake, self.spanMake)
         let region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude), span: span)
-        //self.mapView.setRegion(region, animated: self.flagCenterMapOnLocation)
         self.mapView.setRegion(region, animated: true)
-        //self.flagCenterMapOnLocation = true
-        
-        
-//        let camera = MKMapCamera(lookingAtCenterCoordinate: CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude),
-//                                 fromDistance: distance,
-//                                 pitch: pitch,
-//                                 heading: heading)
-//        
-//        mapView.camera = camera
         
     }
     
@@ -218,9 +186,8 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
         let title = pm.name
         let subtitle = pm.locality
         let coordinate = pm.location?.coordinate
-        let build = Building(title: title!, subtitle: subtitle!, coordinate: coordinate!)
+        let build = Building(title: title!, subtitle: subtitle!, coordinate: coordinate!, pinColor: self.pinColor!)
         self.mapView.addAnnotation(build)
-        
     }
     
     func removeOverlaysAnnotations() {
@@ -231,12 +198,14 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
     }
     
     func reset() {
+        self.locationManager.stopUpdatingLocation()
         self.showMe(false)
         self.action = actions.Nenhum
-        self.locationManager.stopUpdatingLocation()
         self.removeOverlaysAnnotations()
         self.segmentButton2.setTitle("Iniciar", forSegmentAtIndex: 0)
         self.segmentButton2.setEnabled(true, forSegmentAtIndex: 1)
+        self.pinColor = nil
+        self.viewCarregando.hidden = true
     }
     
     func showError(error: NSError) {
@@ -294,35 +263,38 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
     }
     
     @IBAction func actSegmentButton2(sender: UISegmentedControl) {
+        self.viewCarregando.hidden = false
         switch sender.selectedSegmentIndex {
         case 0:
             if self.flagRastrear {
-                UIApplication.sharedApplication().idleTimerDisabled = true
-                //self.flagCenterMapOnLocation = false
+                self.pinColor = UIColor.greenColor()
                 self.flagRastrear = false
+                UIApplication.sharedApplication().idleTimerDisabled = true
                 self.toStop = false
                 self.action = actions.Rastrear
                 self.segmentButton2.setTitle("Parar", forSegmentAtIndex: 0)
                 self.segmentButton2.setEnabled(false, forSegmentAtIndex: 1)
                 self.showMe(true)
                 self.removeOverlays = true
-                self.pinColor = UIColor.greenColor()
                 self.removeOverlaysAnnotations()
                 self.locationManager.startUpdatingLocation()
             } else {
-                UIApplication.sharedApplication().idleTimerDisabled = false
                 self.pinColor = UIColor.redColor()
+                self.locationManager.stopUpdatingLocation()
+                self.flagRastrear = true
+                UIApplication.sharedApplication().idleTimerDisabled = false
                 self.toStop = true
                 self.showMe(false)
                 self.segmentButton2.setTitle("Iniciar", forSegmentAtIndex: 0)
                 self.segmentButton2.setEnabled(true, forSegmentAtIndex: 1)
-                self.flagRastrear = true
+                self.locationManager.requestLocation()
             }
         case 1:
             self.showMe(true)
             self.toStop = true
             action = actions.OndeEstou
-            self.locationManager.startUpdatingLocation()
+            self.pinColor = UIColor.purpleColor()
+            self.locationManager.requestLocation()
         case 2:
             self.reset()
         default:
