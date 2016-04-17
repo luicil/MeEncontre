@@ -48,24 +48,38 @@
                                 <rect key="frame" x="180" y="236" width="240" height="128"/>
                                 <subviews>
                                     <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="W9x-qS-D8T">
-                                        <rect key="frame" x="102" y="30" width="37" height="37"/>
+                                        <rect key="frame" x="102" y="12" width="37" height="37"/>
                                     </activityIndicatorView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Localizando ! Aguarde..." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yYV-Ti-1fy">
-                                        <rect key="frame" x="22" y="75" width="196" height="21"/>
+                                        <rect key="frame" x="22" y="57" width="196" height="21"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="arr-rJ-bX4">
+                                        <rect key="frame" x="56" y="86" width="129" height="30"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="129" id="hmn-eQ-dX6"/>
+                                        </constraints>
+                                        <state key="normal" title="Reset">
+                                            <color key="titleColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="actResetButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="BiL-sG-uFz"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <color key="backgroundColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                 <constraints>
                                     <constraint firstItem="W9x-qS-D8T" firstAttribute="leading" secondItem="KMi-7P-K7r" secondAttribute="leading" constant="102" id="05w-Pp-R4A"/>
                                     <constraint firstAttribute="trailing" secondItem="W9x-qS-D8T" secondAttribute="trailing" constant="101" id="1kd-pm-jTP"/>
-                                    <constraint firstAttribute="bottom" secondItem="yYV-Ti-1fy" secondAttribute="bottom" constant="32" id="3rq-VY-4hI"/>
+                                    <constraint firstItem="arr-rJ-bX4" firstAttribute="centerX" secondItem="KMi-7P-K7r" secondAttribute="centerX" id="2U3-gW-gzf"/>
+                                    <constraint firstAttribute="bottom" secondItem="arr-rJ-bX4" secondAttribute="bottom" constant="12" id="3HU-Ck-Jhl"/>
+                                    <constraint firstAttribute="bottom" secondItem="yYV-Ti-1fy" secondAttribute="bottom" constant="50" id="3rq-VY-4hI"/>
                                     <constraint firstAttribute="height" constant="128" id="A0v-NK-0ac"/>
                                     <constraint firstAttribute="width" constant="240" id="Due-Jj-z9A"/>
                                     <constraint firstAttribute="trailing" secondItem="yYV-Ti-1fy" secondAttribute="trailing" constant="22" id="Wfv-GU-E5d"/>
-                                    <constraint firstItem="W9x-qS-D8T" firstAttribute="top" secondItem="KMi-7P-K7r" secondAttribute="top" constant="30" id="lbf-zd-FsW"/>
+                                    <constraint firstItem="W9x-qS-D8T" firstAttribute="top" secondItem="KMi-7P-K7r" secondAttribute="top" constant="12" id="lbf-zd-FsW"/>
                                     <constraint firstItem="yYV-Ti-1fy" firstAttribute="leading" secondItem="KMi-7P-K7r" secondAttribute="leading" constant="22" id="mmy-yE-BU1"/>
                                 </constraints>
                             </view>

@@ -304,4 +304,10 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
         }
         sender.selectedSegmentIndex = -1
     }
+    
+    @IBAction func actResetButton(sender: UIButton) {
+        self.reset()
+    }
+    
+    
 }

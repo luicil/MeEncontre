@@ -20,6 +20,13 @@
                             <imageView userInteractionEnabled="NO" alpha="0.29999999999999999" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="IMG_0019" translatesAutoresizingMaskIntoConstraints="NO" id="tM8-0d-egr">
                                 <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                             </imageView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="MeEncontre180x180-3x" translatesAutoresizingMaskIntoConstraints="NO" id="IKm-jq-TdS">
+                                <rect key="frame" x="226" y="225" width="148" height="150"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="150" id="Pu5-i3-pnJ"/>
+                                    <constraint firstAttribute="width" constant="148" id="Znp-nr-awd"/>
+                                </constraints>
+                            </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Me Encontre" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="akg-Xh-gBe">
                                 <rect key="frame" x="195" y="28" width="211" height="46"/>
                                 <constraints>
@@ -30,15 +37,28 @@
                                 <color key="textColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="(c) 2016 by Luicil &amp; Cia Ltda." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DTg-Sk-f3J">
+                                <rect key="frame" x="157" y="556" width="287" height="24"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="287" id="3zf-Bo-n8S"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
+                                <color key="textColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="DTg-Sk-f3J" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="63o-0F-IiV"/>
+                            <constraint firstItem="IKm-jq-TdS" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="6pJ-UZ-U8S"/>
                             <constraint firstItem="tM8-0d-egr" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="IRM-gU-jnQ"/>
                             <constraint firstAttribute="trailing" secondItem="tM8-0d-egr" secondAttribute="trailing" id="SoU-dV-OEW"/>
                             <constraint firstItem="akg-Xh-gBe" firstAttribute="top" secondItem="Llm-lL-Icb" secondAttribute="bottom" constant="8" id="Yib-9x-4c2"/>
                             <constraint firstItem="xb3-aO-Qok" firstAttribute="top" secondItem="tM8-0d-egr" secondAttribute="bottom" id="ey4-S9-4Lc"/>
                             <constraint firstItem="akg-Xh-gBe" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="k1W-S6-Nac"/>
                             <constraint firstItem="tM8-0d-egr" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="k8h-bD-ZlX"/>
+                            <constraint firstItem="IKm-jq-TdS" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="kuT-4v-lIw"/>
+                            <constraint firstItem="xb3-aO-Qok" firstAttribute="top" secondItem="DTg-Sk-f3J" secondAttribute="bottom" constant="20" id="mAS-rF-A9C"/>
                             <constraint firstItem="tM8-0d-egr" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="n88-5N-gUa"/>
                             <constraint firstItem="tM8-0d-egr" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="vHU-Et-FE4"/>
                         </constraints>
@@ -51,5 +71,6 @@
     </scenes>
     <resources>
         <image name="IMG_0019" width="3072" height="2048"/>
+        <image name="MeEncontre180x180-3x" width="180" height="180"/>
     </resources>
 </document>
