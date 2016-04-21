@@ -9,8 +9,9 @@
 import UIKit
 import MapKit
 import CoreLocation
+import WatchConnectivity
 
-class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate {
+class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate, WCSessionDelegate {
     
     enum actions : Int {
         case Localizacao = 1
@@ -38,12 +39,16 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
     var startLocation: CLLocation!
     var locations = [CLLocationCoordinate2D]()
     var pinColor : UIColor?
+    var viewSession : WCSession!
+    var MeEncontre : String!
     var toStop : Bool = false
     var flagRastrear : Bool = true
     var removeOverlays : Bool = false
     var flagErro : Bool = false
+    var eRelogio : Bool = false
     var contaErro1 : Int = 0
     var contaErro2 : Int = 0
+    var nRequests : Int = 0
     var action : actions = actions.Rastrear
     
     override func viewDidLoad() {
@@ -67,11 +72,45 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
         self.locationManager.distanceFilter = self.distanceFilter
         self.locationManager.requestAlwaysAuthorization()
         
+        self.startSession()
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    func session(session: WCSession, didReceiveApplicationContext applicationContext: [String : AnyObject]) {
+        //let retorno = applicationContext.keys.first
+        
+        if let retorno = applicationContext["ONDEESTOU"] as? String {
+            //if retorno == "ONDEESTOU" {
+                self.MeEncontre = "ONDEESTOU"
+                self.OndeEstou()
+            //}
+        }
+        
+
+        //self.startSession()
+    }
+    
+    func startSession() {
+        if (WCSession.isSupported()) {
+            self.viewSession = WCSession.defaultSession()
+            self.viewSession.delegate = self
+            self.viewSession.activateSession()
+        }
+    }
+    
+    func retMsg(latitude : Double, longitude : Double) {
+        self.nRequests += 1
+        let appDic = [self.MeEncontre:String(self.nRequests),"LATITUDE":String(latitude),"LONGITUDE":String(longitude)]
+        do {
+            try self.viewSession.updateApplicationContext(appDic)
+        } catch {
+            print("ios error")
+        }
+        self.MeEncontre = ""
     }
     
     func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -98,6 +137,9 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
                 if self.toStop {
                     if self.action != actions.Nenhum {
                         self.setAnnotation(pm)
+                        if self.MeEncontre != "" {
+                            self.retMsg((pm.location?.coordinate.latitude)!, longitude: (pm.location?.coordinate.longitude)!)
+                        }
                     }
                     self.action = actions.Nenhum
                 } else {
@@ -250,6 +292,15 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
         }
     }
     
+    func OndeEstou() {
+        self.viewCarregando.hidden = false
+        self.showMe(true)
+        self.toStop = true
+        action = actions.OndeEstou
+        self.pinColor = UIColor.purpleColor()
+        self.locationManager.requestLocation()
+    }
+    
     @IBAction func actSegmentButton1(sender: UISegmentedControl) {
         switch sender.selectedSegmentIndex {
         case 0:
@@ -291,12 +342,7 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
                 self.locationManager.requestLocation()
             }
         case 1:
-            self.viewCarregando.hidden = false
-            self.showMe(true)
-            self.toStop = true
-            action = actions.OndeEstou
-            self.pinColor = UIColor.purpleColor()
-            self.locationManager.requestLocation()
+            self.OndeEstou()
         case 2:
             self.reset()
         default:
@@ -308,6 +354,5 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
     @IBAction func actResetButton(sender: UIButton) {
         self.reset()
     }
-    
     
 }

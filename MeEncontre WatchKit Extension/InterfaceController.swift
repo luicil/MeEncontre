@@ -8,27 +8,25 @@
 
 import WatchKit
 import Foundation
-import CoreLocation
+import WatchConnectivity
 
 
-class InterfaceController: WKInterfaceController, CLLocationManagerDelegate {
+class InterfaceController: WKInterfaceController, WCSessionDelegate {
     
     @IBOutlet var mapView: WKInterfaceMap!
     
-    let locationManager: CLLocationManager = CLLocationManager()
-    var mapLocation: CLLocationCoordinate2D?
+    var wSession : WCSession!
+    
+    var nRequests : Int = 0
+    
 
     override func awakeWithContext(context: AnyObject?) {
         super.awakeWithContext(context)
         
         // Configure interface objects here.
         
-        self.locationManager.requestAlwaysAuthorization()
+        self.startSession()
         
-        self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        self.locationManager.distanceFilter = 5
-        self.locationManager.delegate = self
-        self.locationManager.requestLocation()
         
     }
 
@@ -42,38 +40,47 @@ class InterfaceController: WKInterfaceController, CLLocationManagerDelegate {
         super.didDeactivate()
     }
     
-    
-    func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        
-        let currentLocation = locations[0]
-        let lat = currentLocation.coordinate.latitude
-        let long = currentLocation.coordinate.longitude
-        
-        self.mapLocation = CLLocationCoordinate2DMake(lat, long)
-        
-        let span = MKCoordinateSpanMake(0.1, 0.1)
-        
-        let region = MKCoordinateRegionMake(self.mapLocation!, span)
-        self.mapView.setRegion(region)
-        
-        self.mapView.addAnnotation(self.mapLocation!,
-                                     withPinColor: .Red)
+    func session(session: WCSession, didReceiveApplicationContext applicationContext: [String : AnyObject]) {
+
+        if let retorno = applicationContext["ONDEESTOU"] as? String {
+            let latitude = applicationContext["LATITUDE"] as? String
+            let longitude = applicationContext["LONGITUDE"] as? String
+            let mapLocation = CLLocationCoordinate2DMake(Double(latitude!)!, Double(longitude!)!)
+            let span = MKCoordinateSpanMake(0.1, 0.1)
+            let region = MKCoordinateRegionMake(mapLocation, span)
+            self.mapView.setRegion(region)
+            self.mapView.addAnnotation(mapLocation, withPinColor: .Purple)
+        }
+        //self.startSession()
     }
     
-    func locationManager(manager: CLLocationManager, didFailWithError error: NSError) {
-        
-        print(error.description)
+    func startSession() {
+        if (WCSession.isSupported()) {
+            self.wSession = WCSession.defaultSession()
+            self.wSession.delegate = self
+            self.wSession.activateSession()
+        }
     }
     
-    @IBAction func actSlider(value: Float) {
-        
-        let degrees:CLLocationDegrees = CLLocationDegrees(value / 10)
-        
-        let span = MKCoordinateSpanMake(degrees, degrees)
-        let region = MKCoordinateRegionMake(mapLocation!, span)
-        
-        mapView.setRegion(region)
+
+    @IBAction func actMnuIniciar() {
     }
     
+    @IBAction func actMnuParar() {
+    }
+    
+    @IBAction func actMenuOndeEstou() {
+        self.nRequests += 1
+        let appDic = ["ONDEESTOU":String(self.nRequests)]
+        do {
+            try self.wSession.updateApplicationContext(appDic)
+        } catch {
+            print("erro")
+        }
+    }
+    
+    @IBAction func actMnuReset() {
+        self.mapView.removeAllAnnotations()
+    }
 
 }

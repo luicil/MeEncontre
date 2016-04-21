@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		3E2C8DDE1CBDA0F3003EF4C6 /* Building.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E2C8DDD1CBDA0F3003EF4C6 /* Building.swift */; };
 		3E4507E61CBAB4110080A966 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E4507E51CBAB4110080A966 /* AppDelegate.swift */; };
-		3E4507E81CBAB4110080A966 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E4507E71CBAB4110080A966 /* ViewController.swift */; };
 		3E4507EB1CBAB4110080A966 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3E4507E91CBAB4110080A966 /* Main.storyboard */; };
 		3E4507ED1CBAB4110080A966 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3E4507EC1CBAB4110080A966 /* Assets.xcassets */; };
 		3E4507F01CBAB4110080A966 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3E4507EE1CBAB4110080A966 /* LaunchScreen.storyboard */; };
@@ -18,9 +17,6 @@
 		3E4507FD1CBAB4110080A966 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3E4507FC1CBAB4110080A966 /* Assets.xcassets */; };
 		3E4508041CBAB4110080A966 /* MeEncontre WatchKit Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 3E4508031CBAB4110080A966 /* MeEncontre WatchKit Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		3E45080B1CBAB4110080A966 /* InterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E45080A1CBAB4110080A966 /* InterfaceController.swift */; };
-		3E45080D1CBAB4110080A966 /* ExtensionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E45080C1CBAB4110080A966 /* ExtensionDelegate.swift */; };
-		3E45080F1CBAB4110080A966 /* NotificationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E45080E1CBAB4110080A966 /* NotificationController.swift */; };
-		3E4508111CBAB4110080A966 /* GlanceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E4508101CBAB4110080A966 /* GlanceController.swift */; };
 		3E4508131CBAB4110080A966 /* ComplicationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E4508121CBAB4110080A966 /* ComplicationController.swift */; };
 		3E4508151CBAB4110080A966 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3E4508141CBAB4110080A966 /* Assets.xcassets */; };
 		3E4508251CBAB5F20080A966 /* MeEncontreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E4508241CBAB5F20080A966 /* MeEncontreViewController.swift */; };
@@ -74,7 +70,6 @@
 		3E2C8DDD1CBDA0F3003EF4C6 /* Building.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Building.swift; sourceTree = "<group>"; };
 		3E4507E21CBAB4110080A966 /* MeEncontre.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MeEncontre.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3E4507E51CBAB4110080A966 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		3E4507E71CBAB4110080A966 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		3E4507EA1CBAB4110080A966 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		3E4507EC1CBAB4110080A966 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3E4507EF1CBAB4110080A966 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -86,9 +81,6 @@
 		3E4508031CBAB4110080A966 /* MeEncontre WatchKit Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "MeEncontre WatchKit Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3E4508091CBAB4110080A966 /* PushNotificationPayload.apns */ = {isa = PBXFileReference; lastKnownFileType = text; path = PushNotificationPayload.apns; sourceTree = "<group>"; };
 		3E45080A1CBAB4110080A966 /* InterfaceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterfaceController.swift; sourceTree = "<group>"; };
-		3E45080C1CBAB4110080A966 /* ExtensionDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionDelegate.swift; sourceTree = "<group>"; };
-		3E45080E1CBAB4110080A966 /* NotificationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationController.swift; sourceTree = "<group>"; };
-		3E4508101CBAB4110080A966 /* GlanceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlanceController.swift; sourceTree = "<group>"; };
 		3E4508121CBAB4110080A966 /* ComplicationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplicationController.swift; sourceTree = "<group>"; };
 		3E4508141CBAB4110080A966 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3E4508161CBAB4110080A966 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -147,7 +139,6 @@
 			children = (
 				3EEA638D1CBC6C5900CD81BB /* MeEncontre.entitlements */,
 				3E4507E51CBAB4110080A966 /* AppDelegate.swift */,
-				3E4507E71CBAB4110080A966 /* ViewController.swift */,
 				3E4507E91CBAB4110080A966 /* Main.storyboard */,
 				3E4507EC1CBAB4110080A966 /* Assets.xcassets */,
 				3E4507EE1CBAB4110080A966 /* LaunchScreen.storyboard */,
@@ -174,9 +165,6 @@
 			children = (
 				3EDDB8121CC039FA00D2DEBE /* MeEncontre WatchKit Extension.entitlements */,
 				3E45080A1CBAB4110080A966 /* InterfaceController.swift */,
-				3E45080C1CBAB4110080A966 /* ExtensionDelegate.swift */,
-				3E45080E1CBAB4110080A966 /* NotificationController.swift */,
-				3E4508101CBAB4110080A966 /* GlanceController.swift */,
 				3E4508121CBAB4110080A966 /* ComplicationController.swift */,
 				3E4508141CBAB4110080A966 /* Assets.xcassets */,
 				3E4508161CBAB4110080A966 /* Info.plist */,
@@ -355,7 +343,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3E4507E81CBAB4110080A966 /* ViewController.swift in Sources */,
 				3E4507E61CBAB4110080A966 /* AppDelegate.swift in Sources */,
 				3E4508251CBAB5F20080A966 /* MeEncontreViewController.swift in Sources */,
 				3E2C8DDE1CBDA0F3003EF4C6 /* Building.swift in Sources */,
@@ -366,11 +353,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3E45080F1CBAB4110080A966 /* NotificationController.swift in Sources */,
-				3E45080D1CBAB4110080A966 /* ExtensionDelegate.swift in Sources */,
 				3E4508131CBAB4110080A966 /* ComplicationController.swift in Sources */,
 				3E45080B1CBAB4110080A966 /* InterfaceController.swift in Sources */,
-				3E4508111CBAB4110080A966 /* GlanceController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
