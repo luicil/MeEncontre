@@ -17,7 +17,7 @@ class InterfaceController: WKInterfaceController, WCSessionDelegate {
     
     var wSession : WCSession!
     
-    var nRequests : Int = 0
+    //var nRequests : Int = 0
     
 
     override func awakeWithContext(context: AnyObject?) {
@@ -40,18 +40,26 @@ class InterfaceController: WKInterfaceController, WCSessionDelegate {
         super.didDeactivate()
     }
     
-    func session(session: WCSession, didReceiveApplicationContext applicationContext: [String : AnyObject]) {
-
-        if let retorno = applicationContext["ONDEESTOU"] as? String {
-            let latitude = applicationContext["LATITUDE"] as? String
-            let longitude = applicationContext["LONGITUDE"] as? String
-            let mapLocation = CLLocationCoordinate2DMake(Double(latitude!)!, Double(longitude!)!)
-            let span = MKCoordinateSpanMake(0.1, 0.1)
-            let region = MKCoordinateRegionMake(mapLocation, span)
-            self.mapView.setRegion(region)
-            self.mapView.addAnnotation(mapLocation, withPinColor: .Purple)
+    func session(session: WCSession, didReceiveMessage message: [String : AnyObject]) {
+        let retorno = message["TIPOMSG"] as? String
+        let latitude = message["LATITUDE"] as? String
+        let longitude = message["LONGITUDE"] as? String
+        
+        let mapLocation = CLLocationCoordinate2DMake(Double(latitude!)!, Double(longitude!)!)
+        let span = MKCoordinateSpanMake(0.1, 0.1)
+        let region = MKCoordinateRegionMake(mapLocation, span)
+        self.mapView.setRegion(region)
+        //self.mapView.addAnnotation(mapLocation, withPinColor: .Purple)
+        if retorno == "ONDEESTOU" {
+            self.mapView.addAnnotation(mapLocation, withImageNamed: "userlocationsf.png", centerOffset: CGPoint(x: 0, y: 0))
+        } else if retorno == "PARAR" {
+            self.mapView.addAnnotation(mapLocation, withPinColor: .Red)
+        } else if retorno == "INICIAR" {
+            self.mapView.addAnnotation(mapLocation, withPinColor: .Green)
         }
-        //self.startSession()
+        
+        
+        
     }
     
     func startSession() {
@@ -62,21 +70,27 @@ class InterfaceController: WKInterfaceController, WCSessionDelegate {
         }
     }
     
-
+    func sndMessage(message: [String : AnyObject]) {
+        self.wSession.sendMessage(message,
+            replyHandler: { reply in
+                //
+            },
+            errorHandler: { error in
+                print(error.localizedDescription)
+        })
+    }
+    
     @IBAction func actMnuIniciar() {
+        self.sndMessage(["TIPOMSG":"INICIAR"])
     }
     
     @IBAction func actMnuParar() {
+        self.sndMessage(["TIPOMSG":"PARAR"])
     }
     
     @IBAction func actMenuOndeEstou() {
-        self.nRequests += 1
-        let appDic = ["ONDEESTOU":String(self.nRequests)]
-        do {
-            try self.wSession.updateApplicationContext(appDic)
-        } catch {
-            print("erro")
-        }
+        self.sndMessage(["TIPOMSG":"ONDEESTOU"])
+
     }
     
     @IBAction func actMnuReset() {

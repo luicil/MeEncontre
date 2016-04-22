@@ -48,7 +48,6 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
     var eRelogio : Bool = false
     var contaErro1 : Int = 0
     var contaErro2 : Int = 0
-    var nRequests : Int = 0
     var action : actions = actions.Rastrear
     
     override func viewDidLoad() {
@@ -80,18 +79,14 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
         // Dispose of any resources that can be recreated.
     }
     
-    func session(session: WCSession, didReceiveApplicationContext applicationContext: [String : AnyObject]) {
-        //let retorno = applicationContext.keys.first
-        
-        if let retorno = applicationContext["ONDEESTOU"] as? String {
-            //if retorno == "ONDEESTOU" {
-                self.MeEncontre = "ONDEESTOU"
-                self.OndeEstou()
-            //}
+    func session(session: WCSession, didReceiveMessage message: [String : AnyObject]) {
+        let retorno = message["TIPOMSG"] as? String
+        self.MeEncontre = retorno
+        if retorno == "ONDEESTOU" {
+            self.OndeEstou()
+        } else if retorno == "PARAR" {
+            self.Parar()
         }
-        
-
-        //self.startSession()
     }
     
     func startSession() {
@@ -103,13 +98,14 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
     }
     
     func retMsg(latitude : Double, longitude : Double) {
-        self.nRequests += 1
-        let appDic = [self.MeEncontre:String(self.nRequests),"LATITUDE":String(latitude),"LONGITUDE":String(longitude)]
-        do {
-            try self.viewSession.updateApplicationContext(appDic)
-        } catch {
-            print("ios error")
-        }
+        let appDic = ["TIPOMSG":self.MeEncontre,"LATITUDE":String(latitude),"LONGITUDE":String(longitude)]
+        self.viewSession.sendMessage(appDic,
+            replyHandler: { reply in
+            // Code to handle reply here
+            },
+            errorHandler: { error in
+                print(error.localizedDescription)
+        })
         self.MeEncontre = ""
     }
     
@@ -301,6 +297,18 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
         self.locationManager.requestLocation()
     }
     
+    func Parar() {
+        self.pinColor = UIColor.redColor()
+        self.locationManager.stopUpdatingLocation()
+        self.flagRastrear = true
+        UIApplication.sharedApplication().idleTimerDisabled = false
+        self.toStop = true
+        self.showMe(false)
+        self.segmentButton2.setTitle("Iniciar", forSegmentAtIndex: 0)
+        self.segmentButton2.setEnabled(true, forSegmentAtIndex: 1)
+        self.locationManager.requestLocation()
+    }
+    
     @IBAction func actSegmentButton1(sender: UISegmentedControl) {
         switch sender.selectedSegmentIndex {
         case 0:
@@ -331,15 +339,7 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
                 self.removeOverlaysAnnotations()
                 self.locationManager.startUpdatingLocation()
             } else {
-                self.pinColor = UIColor.redColor()
-                self.locationManager.stopUpdatingLocation()
-                self.flagRastrear = true
-                UIApplication.sharedApplication().idleTimerDisabled = false
-                self.toStop = true
-                self.showMe(false)
-                self.segmentButton2.setTitle("Iniciar", forSegmentAtIndex: 0)
-                self.segmentButton2.setEnabled(true, forSegmentAtIndex: 1)
-                self.locationManager.requestLocation()
+                self.Parar()
             }
         case 1:
             self.OndeEstou()
