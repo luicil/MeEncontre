@@ -14,12 +14,14 @@ class Building: NSObject, MKAnnotation {
     let subtitle: String?
     let coordinate : CLLocationCoordinate2D
     let pinColor : UIColor
+    var tipoPin : String = "P"
     
-    init(title: String, subtitle: String , coordinate: CLLocationCoordinate2D, pinColor : UIColor) {
+    init(title: String, subtitle: String , coordinate: CLLocationCoordinate2D, pinColor : UIColor, tipoPin : String = "P") {
         self.title = title
         self.subtitle = subtitle
         self.coordinate = coordinate
         self.pinColor = pinColor
+        self.tipoPin = tipoPin
         super.init()
     }
     

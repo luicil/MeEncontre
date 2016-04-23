@@ -14,19 +14,19 @@ import WatchConnectivity
 class InterfaceController: WKInterfaceController, WCSessionDelegate {
     
     @IBOutlet var mapView: WKInterfaceMap!
+    @IBOutlet var sliderMap: WKInterfaceSlider!
     
     var wSession : WCSession!
+    var lastLocation: CLLocationCoordinate2D?
     
-    //var nRequests : Int = 0
+    var iniciado : Bool = false
     
-
     override func awakeWithContext(context: AnyObject?) {
         super.awakeWithContext(context)
         
         // Configure interface objects here.
         
         self.startSession()
-        
         
     }
 
@@ -39,27 +39,38 @@ class InterfaceController: WKInterfaceController, WCSessionDelegate {
         // This method is called when watch view controller is no longer visible
         super.didDeactivate()
     }
+
+    func setMapRegion(mapLocation : CLLocationCoordinate2D) {
+        let span = MKCoordinateSpanMake(0.1, 0.1)
+        let region = MKCoordinateRegionMake(mapLocation, span)
+        self.mapView.setRegion(region)
+    }
     
     func session(session: WCSession, didReceiveMessage message: [String : AnyObject]) {
         let retorno = message["TIPOMSG"] as? String
         let latitude = message["LATITUDE"] as? String
         let longitude = message["LONGITUDE"] as? String
-        
         let mapLocation = CLLocationCoordinate2DMake(Double(latitude!)!, Double(longitude!)!)
-        let span = MKCoordinateSpanMake(0.1, 0.1)
-        let region = MKCoordinateRegionMake(mapLocation, span)
-        self.mapView.setRegion(region)
-        //self.mapView.addAnnotation(mapLocation, withPinColor: .Purple)
+        self.lastLocation = mapLocation
         if retorno == "ONDEESTOU" {
-            self.mapView.addAnnotation(mapLocation, withImageNamed: "userlocationsf.png", centerOffset: CGPoint(x: 0, y: 0))
+            dispatch_async(dispatch_get_main_queue()) {
+                self.setMapRegion(mapLocation)
+                self.mapView.addAnnotation(mapLocation, withImageNamed: "userlocationsf.png", centerOffset: CGPoint(x: 0, y: 0))
+            }
         } else if retorno == "PARAR" {
-            self.mapView.addAnnotation(mapLocation, withPinColor: .Red)
+            dispatch_async(dispatch_get_main_queue()) {
+                self.mapView.addAnnotation(mapLocation, withPinColor: .Red)
+            }
         } else if retorno == "INICIAR" {
-            self.mapView.addAnnotation(mapLocation, withPinColor: .Green)
+            dispatch_async(dispatch_get_main_queue()) {
+                self.setMapRegion(mapLocation)
+                self.mapView.addAnnotation(mapLocation, withPinColor: .Green)
+            }
+        } else if retorno == "RASTREAR" {
+            dispatch_async(dispatch_get_main_queue()) {
+                self.mapView.addAnnotation(mapLocation, withImageNamed: "traco.png", centerOffset: CGPoint(x: 0, y: 0))
+            }
         }
-        
-        
-        
     }
     
     func startSession() {
@@ -81,11 +92,18 @@ class InterfaceController: WKInterfaceController, WCSessionDelegate {
     }
     
     @IBAction func actMnuIniciar() {
-        self.sndMessage(["TIPOMSG":"INICIAR"])
+        if !self.iniciado {
+            self.iniciado = true
+            self.mapView.removeAllAnnotations()
+            self.sndMessage(["TIPOMSG":"INICIAR"])
+        }
     }
     
     @IBAction func actMnuParar() {
-        self.sndMessage(["TIPOMSG":"PARAR"])
+        if self.iniciado {
+            self.sndMessage(["TIPOMSG":"PARAR"])
+        }
+        self.iniciado = false
     }
     
     @IBAction func actMenuOndeEstou() {
@@ -94,7 +112,16 @@ class InterfaceController: WKInterfaceController, WCSessionDelegate {
     }
     
     @IBAction func actMnuReset() {
+        self.iniciado = false
         self.mapView.removeAllAnnotations()
     }
+    
+    @IBAction func actSliderMap(value: Float) {
+        let degrees:CLLocationDegrees = CLLocationDegrees(value / 10)
+        let span = MKCoordinateSpanMake(degrees, degrees)
+        let region = MKCoordinateRegionMake(self.lastLocation!, span)
+        self.mapView.setRegion(region)
+    }
+    
 
 }

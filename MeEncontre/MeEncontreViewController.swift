@@ -26,7 +26,6 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
     @IBOutlet weak var viewCarregando: UIView!
     @IBOutlet weak var activityCarregando: UIActivityIndicatorView!
     
-    
     let locationManager : CLLocationManager = CLLocationManager()
     let regionRadious : CLLocationDistance = 0
     let spanMake : Double = 0.005
@@ -86,6 +85,8 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
             self.OndeEstou()
         } else if retorno == "PARAR" {
             self.Parar()
+        } else if retorno == "INICIAR" {
+            self.Iniciar()
         }
     }
     
@@ -98,15 +99,22 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
     }
     
     func retMsg(latitude : Double, longitude : Double) {
-        let appDic = ["TIPOMSG":self.MeEncontre,"LATITUDE":String(latitude),"LONGITUDE":String(longitude)]
-        self.viewSession.sendMessage(appDic,
-            replyHandler: { reply in
-            // Code to handle reply here
-            },
-            errorHandler: { error in
-                print(error.localizedDescription)
-        })
-        self.MeEncontre = ""
+        if self.MeEncontre != nil {
+            let appDic = ["TIPOMSG":self.MeEncontre,"LATITUDE":String(latitude),"LONGITUDE":String(longitude)]
+            self.viewSession.sendMessage(appDic,
+                                         replyHandler: { reply in
+                                            // Code to handle reply here
+                },
+                                         errorHandler: { error in
+                                            print(error.localizedDescription)
+            })
+            if self.MeEncontre == "INICIAR" {
+                self.MeEncontre = "RASTREAR"
+            } else if self.MeEncontre != "RASTREAR" {
+                self.MeEncontre = ""
+            }
+        }
+
     }
     
     func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -153,6 +161,7 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
                         self.mapView.addOverlay(polyline)
                         self.centerMapOnLocation(pm.location!)
                     }
+                    self.retMsg((pm.location?.coordinate.latitude)!, longitude: (pm.location?.coordinate.longitude)!)
                 }
             }
             
@@ -309,6 +318,20 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
         self.locationManager.requestLocation()
     }
     
+    func Iniciar() {
+        self.pinColor = UIColor.greenColor()
+        self.flagRastrear = false
+        UIApplication.sharedApplication().idleTimerDisabled = true
+        self.toStop = false
+        self.action = actions.Rastrear
+        self.segmentButton2.setTitle("Parar", forSegmentAtIndex: 0)
+        self.segmentButton2.setEnabled(false, forSegmentAtIndex: 1)
+        self.showMe(true)
+        self.removeOverlays = true
+        self.removeOverlaysAnnotations()
+        self.locationManager.startUpdatingLocation()
+    }
+    
     @IBAction func actSegmentButton1(sender: UISegmentedControl) {
         switch sender.selectedSegmentIndex {
         case 0:
@@ -327,17 +350,7 @@ class MeEncontreViewController: UIViewController, MKMapViewDelegate, CLLocationM
         case 0:
             self.viewCarregando.hidden = false
             if self.flagRastrear {
-                self.pinColor = UIColor.greenColor()
-                self.flagRastrear = false
-                UIApplication.sharedApplication().idleTimerDisabled = true
-                self.toStop = false
-                self.action = actions.Rastrear
-                self.segmentButton2.setTitle("Parar", forSegmentAtIndex: 0)
-                self.segmentButton2.setEnabled(false, forSegmentAtIndex: 1)
-                self.showMe(true)
-                self.removeOverlays = true
-                self.removeOverlaysAnnotations()
-                self.locationManager.startUpdatingLocation()
+                self.Iniciar()
             } else {
                 self.Parar()
             }
