@@ -18,6 +18,7 @@ class InterfaceController: WKInterfaceController, WCSessionDelegate {
     
     var wSession : WCSession!
     var lastLocation: CLLocationCoordinate2D?
+    var locations : [Building] = [Building]()
     
     var iniciado : Bool = false
     
@@ -46,6 +47,46 @@ class InterfaceController: WKInterfaceController, WCSessionDelegate {
         self.mapView.setRegion(region)
     }
     
+    func addLocation(location : CLLocationCoordinate2D, imageName : String, pinColor : UIColor) {
+        self.locations.append(Building(title: "", subtitle: "", coordinate: location, pinColor: pinColor, tipoPin: "P", imageName: imageName))
+        var pColor : WKInterfaceMapPinColor?
+        switch pinColor {
+        case UIColor.redColor():
+            pColor = WKInterfaceMapPinColor.Red
+        case UIColor.greenColor():
+            pColor = WKInterfaceMapPinColor.Green
+        case UIColor.purpleColor():
+            pColor = WKInterfaceMapPinColor.Purple
+        default:
+            pColor = WKInterfaceMapPinColor.Green
+        }
+        if self.locations.count <= 5 {
+            self.addAnnotation(location, imageName: imageName, pinColor: pColor!)
+        } else {
+            var mapLocation : CLLocationCoordinate2D = self.locations[0].coordinate
+            self.addAnnotation(mapLocation, imageName: imageName, pinColor: pColor!)
+            let cotaPos : Int = self.locations.count / 4
+            for i in 1...3 {
+                let pos = i + cotaPos
+                mapLocation = self.locations[pos].coordinate
+                self.addAnnotation(mapLocation, imageName: imageName, pinColor: pColor!)
+            }
+            mapLocation = self.locations[4].coordinate
+            self.addAnnotation(mapLocation, imageName: imageName, pinColor: pColor!)
+        }
+    }
+    
+    func addAnnotation(mapLocation : CLLocationCoordinate2D, imageName : String, pinColor : WKInterfaceMapPinColor) {
+        dispatch_async(dispatch_get_main_queue()) {
+            if imageName == "" {
+                self.mapView.addAnnotation(mapLocation, withPinColor: pinColor)
+                
+            } else {
+                self.mapView.addAnnotation(mapLocation, withImageNamed: imageName, centerOffset: CGPoint(x: 0, y: 0))
+            }
+        }
+    }
+    
     func session(session: WCSession, didReceiveMessage message: [String : AnyObject]) {
         let retorno = message["TIPOMSG"] as? String
         let latitude = message["LATITUDE"] as? String
@@ -55,21 +96,27 @@ class InterfaceController: WKInterfaceController, WCSessionDelegate {
         if retorno == "ONDEESTOU" {
             dispatch_async(dispatch_get_main_queue()) {
                 self.setMapRegion(mapLocation)
-                self.mapView.addAnnotation(mapLocation, withImageNamed: "userlocationsf.png", centerOffset: CGPoint(x: 0, y: 0))
+                self.addLocation(mapLocation, imageName: "userlocationsf.png", pinColor: UIColor.greenColor())
+                //self.mapView.addAnnotation(mapLocation, withImageNamed: "userlocationsf.png", centerOffset: CGPoint(x: 0, y: 0))
             }
         } else if retorno == "PARAR" {
-            dispatch_async(dispatch_get_main_queue()) {
-                self.mapView.addAnnotation(mapLocation, withPinColor: .Red)
-            }
+            self.addLocation(mapLocation, imageName: "", pinColor: UIColor.redColor())
+//            dispatch_async(dispatch_get_main_queue()) {
+//                self.mapView.addAnnotation(mapLocation, withPinColor: .Red)
+//            }
         } else if retorno == "INICIAR" {
-            dispatch_async(dispatch_get_main_queue()) {
-                self.setMapRegion(mapLocation)
-                self.mapView.addAnnotation(mapLocation, withPinColor: .Green)
-            }
+            self.locations.removeAll()
+            self.addLocation(mapLocation, imageName: "", pinColor: UIColor.greenColor())
+//            dispatch_async(dispatch_get_main_queue()) {
+//                //self.locations.append(Building(title: "", subtitle: "", coordinate: mapLocation, pinColor: UIColor.greenColor(), tipoPin: "P"))
+//                self.setMapRegion(mapLocation)
+//                self.mapView.addAnnotation(mapLocation, withPinColor: .Green)
+//            }
         } else if retorno == "RASTREAR" {
-            dispatch_async(dispatch_get_main_queue()) {
-                self.mapView.addAnnotation(mapLocation, withImageNamed: "traco.png", centerOffset: CGPoint(x: 0, y: 0))
-            }
+            self.addLocation(mapLocation, imageName: "traco.png", pinColor: UIColor.greenColor())
+//            dispatch_async(dispatch_get_main_queue()) {
+//                self.mapView.addAnnotation(mapLocation, withImageNamed: "traco.png", centerOffset: CGPoint(x: 0, y: 0))
+//            }
         }
     }
     
@@ -91,10 +138,17 @@ class InterfaceController: WKInterfaceController, WCSessionDelegate {
         })
     }
     
+    func reset() {
+        self.iniciado = false
+        self.sliderMap.setValue(1.0)
+        //self.actSliderMap(1.0)
+        self.mapView.removeAllAnnotations()
+    }
+    
     @IBAction func actMnuIniciar() {
         if !self.iniciado {
             self.iniciado = true
-            self.mapView.removeAllAnnotations()
+            self.reset()
             self.sndMessage(["TIPOMSG":"INICIAR"])
         }
     }
@@ -112,15 +166,16 @@ class InterfaceController: WKInterfaceController, WCSessionDelegate {
     }
     
     @IBAction func actMnuReset() {
-        self.iniciado = false
-        self.mapView.removeAllAnnotations()
+        self.reset()
     }
     
     @IBAction func actSliderMap(value: Float) {
-        let degrees:CLLocationDegrees = CLLocationDegrees(value / 10)
-        let span = MKCoordinateSpanMake(degrees, degrees)
-        let region = MKCoordinateRegionMake(self.lastLocation!, span)
-        self.mapView.setRegion(region)
+        if self.lastLocation != nil {
+            let degrees:CLLocationDegrees = CLLocationDegrees(value / 10)
+            let span = MKCoordinateSpanMake(degrees, degrees)
+            let region = MKCoordinateRegionMake(self.lastLocation!, span)
+            self.mapView.setRegion(region)
+        }
     }
     
 

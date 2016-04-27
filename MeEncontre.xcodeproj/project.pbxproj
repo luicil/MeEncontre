@@ -20,6 +20,7 @@
 		3E4508131CBAB4110080A966 /* ComplicationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E4508121CBAB4110080A966 /* ComplicationController.swift */; };
 		3E4508151CBAB4110080A966 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3E4508141CBAB4110080A966 /* Assets.xcassets */; };
 		3E4508251CBAB5F20080A966 /* MeEncontreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E4508241CBAB5F20080A966 /* MeEncontreViewController.swift */; };
+		3E5DEB7E1CCD251B009EC916 /* Building.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E2C8DDD1CBDA0F3003EF4C6 /* Building.swift */; };
 		3EDDB8141CC03A3400D2DEBE /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3EDDB8131CC03A3400D2DEBE /* MapKit.framework */; };
 		3EDDB8161CC03A4E00D2DEBE /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3EDDB8151CC03A4E00D2DEBE /* MapKit.framework */; };
 /* End PBXBuildFile section */
@@ -67,7 +68,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		3E2C8DDD1CBDA0F3003EF4C6 /* Building.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Building.swift; sourceTree = "<group>"; };
+		3E2C8DDD1CBDA0F3003EF4C6 /* Building.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Building.swift; path = MeEncontre/Building.swift; sourceTree = "<group>"; };
 		3E4507E21CBAB4110080A966 /* MeEncontre.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MeEncontre.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3E4507E51CBAB4110080A966 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3E4507EA1CBAB4110080A966 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -115,6 +116,7 @@
 		3E4507D91CBAB4110080A966 = {
 			isa = PBXGroup;
 			children = (
+				3E2C8DDD1CBDA0F3003EF4C6 /* Building.swift */,
 				3EDDB8151CC03A4E00D2DEBE /* MapKit.framework */,
 				3EDDB8131CC03A3400D2DEBE /* MapKit.framework */,
 				3E4507E41CBAB4110080A966 /* MeEncontre */,
@@ -144,7 +146,6 @@
 				3E4507EE1CBAB4110080A966 /* LaunchScreen.storyboard */,
 				3E4507F11CBAB4110080A966 /* Info.plist */,
 				3E4508241CBAB5F20080A966 /* MeEncontreViewController.swift */,
-				3E2C8DDD1CBDA0F3003EF4C6 /* Building.swift */,
 			);
 			path = MeEncontre;
 			sourceTree = "<group>";
@@ -354,6 +355,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3E4508131CBAB4110080A966 /* ComplicationController.swift in Sources */,
+				3E5DEB7E1CCD251B009EC916 /* Building.swift in Sources */,
 				3E45080B1CBAB4110080A966 /* InterfaceController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -11,7 +11,7 @@
                 <controller id="AgC-eL-Hgc" customClass="InterfaceController" customModule="MeEncontre_WatchKit_App" customModuleProvider="target">
                     <items>
                         <map height="142" alignment="left" id="xwm-8c-q3p">
-                            <variation key="device=watch42mm" height="126"/>
+                            <variation key="device=watch42mm" height="128"/>
                         </map>
                         <slider width="1" alignment="left" value="1" minimum="1" maximum="10" steps="10" id="LWq-xI-pFn">
                             <connections>
@@ -59,7 +59,7 @@
                     </connections>
                 </controller>
             </objects>
-            <point key="canvasLocation" x="234.51282051282053" y="346.53846153846155"/>
+            <point key="canvasLocation" x="234.51282051282053" y="346.97435897435901"/>
         </scene>
     </scenes>
 </document>
